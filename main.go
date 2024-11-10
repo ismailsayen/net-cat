@@ -7,21 +7,21 @@ import (
 	"net"
 	"os"
 
-	"netcat/functions"
+	"TCPChat/functions"
 )
 
 func main() {
 	arguments := os.Args
-	if len(arguments) == 1 {
-		fmt.Println("Please provide a port number!")
+	if len(arguments) != 2 {
+		fmt.Println("[USAGE]: ./TCPChat $port")
 		return
 	}
-
 	PORT := ":" + arguments[1]
 	l, err := net.Listen("tcp", PORT)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("Listening on the port %s\n", PORT)
 	defer l.Close()
 
 	for {
@@ -61,16 +61,14 @@ check:
 			fmt.Println("END OF FILE")
 			break
 		}
-		packet = append(packet, tmp[:n]...)
+			packet = packet[:0]
+			packet = append(packet, tmp[:n]...)
 		if userName == "" {
-			if !functions.ValidName(packet) {
+			if !functions.ValidName(packet) && string(packet) == "\n" {
 				goto check
-			} else {
-				userName = string(packet)
 			}
+			userName = string(packet)
 		}
 
-		// Réinitialiser `packet` pour éviter d'envoyer les mêmes données plusieurs fois
-		packet = packet[:0]
 	}
 }

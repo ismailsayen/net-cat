@@ -7,7 +7,10 @@ import (
 	"os"
 
 	"TCPChat/functions"
+	"TCPChat/models"
 )
+
+var list = &models.Users{List: make(map[string]net.Conn)}
 
 func main() {
 	arguments := os.Args
@@ -15,6 +18,7 @@ func main() {
 		fmt.Println("[USAGE]: ./TCPChat $port")
 		return
 	}
+
 	PORT := ":" + arguments[1]
 	listener, err := net.Listen("tcp", PORT)
 	if err != nil {
@@ -22,7 +26,6 @@ func main() {
 	}
 	fmt.Printf("Listening on the port %s\n", PORT)
 	defer listener.Close()
-
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
